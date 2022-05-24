@@ -25,7 +25,7 @@ public class PasajerosTests {
     public void initialize() {
         sistema = new SistemaImp();
         sistema.inicializarSistema(200);
-        //checker = new Checker<>(TestPasajeroNoUsar::parse);
+        checker = new Checker<>(TestPasajeroNoUsar::parse);
     }
 
 
