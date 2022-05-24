@@ -5,15 +5,13 @@ public class SistemaImp implements Sistema {
 	int maxAeropuertos;
 	Lista<Pasajero> pasajeros;
 
-	public SistemaImp(int maxAeropuertos) {
-		this.maxAeropuertos = maxAeropuertos;
-	};
 
 	@Override
 	public Retorno inicializarSistema(int maxAeropuertos) {
 		if (maxAeropuertos <= 2) {
 			return new Retorno(Retorno.Resultado.ERROR_1);
 		} else {
+			this.pasajeros = new Lista<Pasajero>();
 			return new Retorno(Retorno.Resultado.OK);
 		}
 	}
@@ -22,15 +20,13 @@ public class SistemaImp implements Sistema {
 	public Retorno registrarPasajero(String cedula, String nombre, String telefono, Categoria categoria) {
 		if (cedula == null || nombre == null || telefono == null || categoria == null) {
 			return new Retorno(Retorno.Resultado.ERROR_1);
-			// TODO: falta chequear cedula
-		} else if (pasajeros.search()) {
-			// TODO: chequear que no exista
+//TODO:buscar cedula
+		} else if (!Pasajero.verificarCedula(cedula)) {
 			return new Retorno(Retorno.Resultado.ERROR_2);
-		} else {
+		}  else {
 			pasajeros.add(new Pasajero(cedula, nombre, telefono, categoria));
 			return new Retorno(Retorno.Resultado.OK);
 		}
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
 	}
 
 	@Override

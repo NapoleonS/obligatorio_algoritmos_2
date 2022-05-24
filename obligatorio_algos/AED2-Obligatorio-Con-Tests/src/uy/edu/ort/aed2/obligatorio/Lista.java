@@ -7,6 +7,8 @@ public class Lista<T> {
 		this.cabeza = new Nodo(cabeza);
 	}
 
+	public Lista(){}
+
 	class Nodo {
 		T dato;
 		Nodo next;
@@ -19,6 +21,10 @@ public class Lista<T> {
 	public void add(T dato) {
 		Nodo new_node = new Nodo(dato);
 		new_node.next = null;
+if(this.cabeza == null){
+	this.cabeza = new_node;
+	return;
+}
 
 		Nodo last = this.cabeza;
 		while (last.next != null) {
