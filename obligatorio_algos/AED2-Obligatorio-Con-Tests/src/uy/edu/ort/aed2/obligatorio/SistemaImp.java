@@ -1,37 +1,61 @@
 package uy.edu.ort.aed2.obligatorio;
 
+import uy.edu.ort.aed2.obligatorio.Arbol.Nodo;
+import uy.edu.ort.aed2.obligatorio.Retorno.Resultado;
+
 public class SistemaImp implements Sistema {
 
 	int maxAeropuertos;
-	Lista<Pasajero> pasajeros;
-
+	Arbol<Pasajero> pasajeros;
 
 	@Override
 	public Retorno inicializarSistema(int maxAeropuertos) {
 		if (maxAeropuertos <= 2) {
 			return new Retorno(Retorno.Resultado.ERROR_1);
 		} else {
-			this.pasajeros = new Lista<Pasajero>();
+			this.pasajeros = new Arbol<Pasajero>();
 			return new Retorno(Retorno.Resultado.OK);
 		}
 	}
 
 	@Override
 	public Retorno registrarPasajero(String cedula, String nombre, String telefono, Categoria categoria) {
-		if (cedula == null || nombre == null || telefono == null || categoria == null) {
+		if (cedula == null || nombre == null || telefono == null || categoria == null || cedula == "" || nombre == ""
+				|| telefono == "") {
 			return new Retorno(Retorno.Resultado.ERROR_1);
-//TODO:buscar cedula
-		} else if (!Pasajero.verificarCedula(cedula)) {
-			return new Retorno(Retorno.Resultado.ERROR_2);
-		}  else {
-			pasajeros.add(new Pasajero(cedula, nombre, telefono, categoria));
-			return new Retorno(Retorno.Resultado.OK);
+		} else {
+			if (!Pasajero.verificarCedula(cedula)) {
+				return new Retorno(Retorno.Resultado.ERROR_2);
+			} else if (buscarPasajero(cedula).resultado == Resultado.OK) {
+				return new Retorno(Retorno.Resultado.ERROR_3);
+			} else {
+				pasajeros.add(new Pasajero(cedula, nombre, telefono, categoria));
+				return new Retorno(Retorno.Resultado.OK);
+			}
 		}
 	}
 
 	@Override
 	public Retorno buscarPasajero(String cedula) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		if (!Pasajero.verificarCedula(cedula)) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		}
+		int cedulaInt = Integer.parseInt(cedula.replaceAll("[./-]", ""));
+		int contador = 0;
+		var current = pasajeros.raiz;
+		while (current != null) {
+			contador++;
+			if (current.dato.hashCode() > Integer.parseInt(cedula.replaceAll("[./-]", ""))) {
+				current = current.left;
+			} else if (current.dato.hashCode() < Integer.parseInt(cedula.replaceAll("[./-]", ""))) {
+				current = current.right;
+			} else {
+				return new Retorno(Retorno.Resultado.OK, contador, current.dato.toString());
+			}
+		}
+
+		return new Retorno(Retorno.Resultado.ERROR_2);
+
 	}
 
 	@Override
