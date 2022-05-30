@@ -1,26 +1,26 @@
 package uy.edu.ort.aed2.obligatorio;
 
 public class Lista<T> {
-	Nodo cabeza;
+	NodoLista cabeza;
 
 	public Lista(T cabeza) {
-		this.cabeza = new Nodo(cabeza);
+		this.cabeza = new NodoLista(cabeza);
 	}
 
 	public Lista() {
 	}
 
-	class Nodo {
+	class NodoLista {
 		T dato;
-		Nodo next;
+		NodoLista next;
 
-		Nodo(T d) {
+		NodoLista(T d) {
 			dato = d;
 		}
 	}
 
 	public void addInicio(T dato) {
-		Nodo nuevo = new Nodo(dato);
+		NodoLista nuevo = new NodoLista(dato);
 		nuevo.next = cabeza;
 		cabeza = nuevo;
 	}
@@ -29,7 +29,7 @@ public class Lista<T> {
 		if (cabeza == null) {
 			return null;
 		}
-		Nodo aux = cabeza;
+		NodoLista aux = cabeza;
 		cabeza = cabeza.next;
 		return aux.dato;
 	}
@@ -38,7 +38,7 @@ public class Lista<T> {
 		if (cabeza == null) {
 			return null;
 		}
-		Nodo aux = cabeza;
+		NodoLista aux = cabeza;
 		while (aux.next.next != null) {
 			aux = aux.next;
 		}
@@ -51,14 +51,14 @@ public class Lista<T> {
 	}
 
 	public void add(T dato) {
-		Nodo new_node = new Nodo(dato);
+		NodoLista new_node = new NodoLista(dato);
 		new_node.next = null;
 		if (this.cabeza == null) {
 			this.cabeza = new_node;
 			return;
 		}
 
-		Nodo last = this.cabeza;
+		NodoLista last = this.cabeza;
 		while (last.next != null) {
 			last = last.next;
 		}
@@ -68,7 +68,7 @@ public class Lista<T> {
 	}
 
 	public T search(Object dato) {
-		Nodo current = this.cabeza;
+		NodoLista current = this.cabeza;
 		while (current != null) {
 			if (current.dato.equals(dato)) {
 				return current.dato;
@@ -79,8 +79,8 @@ public class Lista<T> {
 	}
 
 	public boolean remove(T dato) {
-		Nodo last = this.cabeza;
-		Nodo prev = null;
+		NodoLista last = this.cabeza;
+		NodoLista prev = null;
 		while (last.next != null) {
 			if (last.dato.equals(dato)) {
 				prev.next = last.next;
@@ -90,5 +90,16 @@ public class Lista<T> {
 			last = last.next;
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		NodoLista current = this.cabeza;
+		while (current != null) {
+			sb.append(current.dato.toString());
+			current = current.next;
+		}
+		return sb.toString();
 	}
 }

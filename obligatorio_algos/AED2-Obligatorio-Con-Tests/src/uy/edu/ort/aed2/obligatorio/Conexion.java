@@ -1,7 +1,5 @@
 package uy.edu.ort.aed2.obligatorio;
 
-import uy.edu.ort.aed2.obligatorio.Lista.Nodo;
-
 public class Conexion {
 	private double km;
 	private boolean habilitada;

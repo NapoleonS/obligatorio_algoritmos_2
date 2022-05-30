@@ -1,6 +1,7 @@
 package uy.edu.ort.aed2.obligatorio;
 
 import uy.edu.ort.aed2.obligatorio.Arbol.Nodo;
+import uy.edu.ort.aed2.obligatorio.Lista.NodoLista;
 import uy.edu.ort.aed2.obligatorio.Retorno.Resultado;
 
 public class SistemaImp implements Sistema {
@@ -61,17 +62,44 @@ public class SistemaImp implements Sistema {
 
 	@Override
 	public Retorno listarPasajerosAscendente() {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		String result = pasajeros.listarOrdenado();
+		return new Retorno(Resultado.OK, 0, result);
 	}
 
 	@Override
 	public Retorno listarPasajerosDescendente() {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		String result = pasajeros.listarDescendente();
+		return new Retorno(Retorno.Resultado.OK, 0, result);
 	}
 
 	@Override
 	public Retorno listarPasajerosPorCategoría(Categoria categoria) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		Lista<Pasajero> pasajerosCategoria = new Lista<Pasajero>();
+		listarPasajerosPorCategoriaRecursivo(categoria, pasajeros.raiz, pasajerosCategoria);
+		String result = "";
+		NodoLista current = pasajerosCategoria.cabeza;
+		while (current != null) {
+			if (current.next == null) {
+				result += current.dato.toString();
+
+			} else {
+
+				result += current.dato.toString() + "|";
+			}
+			current = current.next;
+		}
+		return new Retorno(Retorno.Resultado.OK, 0, result);
+	}
+
+	private void listarPasajerosPorCategoriaRecursivo(Categoria categoria, Nodo nodo,
+			Lista<Pasajero> pasajerosCategoria) {
+		if (nodo == null)
+			return;
+		listarPasajerosPorCategoriaRecursivo(categoria, nodo.right, pasajerosCategoria);
+		if (((Pasajero) nodo.dato).categoria == categoria) {
+			pasajerosCategoria.add((Pasajero) nodo.dato);
+		} // nodo.toString()?
+		listarPasajerosPorCategoriaRecursivo(categoria, nodo.left, pasajerosCategoria);
 	}
 
 	@Override
@@ -163,7 +191,15 @@ public class SistemaImp implements Sistema {
 
 	@Override
 	public Retorno listadoAeropuertosCantDeEscalas(String codigoAeropuertoDeOrigen, int cantidad) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		if (cantidad < 0) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		} else if (grafo.buscarCodigo(codigoAeropuertoDeOrigen) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_2);
+		} else {
+			Lista<Aeropuerto> lista = grafo.bfsLimitado(grafo.buscarCodigo(codigoAeropuertoDeOrigen), cantidad);
+
+			return new Retorno(Retorno.Resultado.OK, 0, lista.toString());
+		}
 	}
 
 	@Override

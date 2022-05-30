@@ -36,6 +36,6 @@ public class Aeropuerto {
 
 	@Override
 	public String toString() {
-		return nombre;
+		return codigo + ";" + nombre;
 	}
 }
