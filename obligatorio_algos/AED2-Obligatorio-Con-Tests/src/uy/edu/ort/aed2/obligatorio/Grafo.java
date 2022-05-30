@@ -62,13 +62,43 @@ public class Grafo {
 	}
 
 	public Aeropuerto buscarCodigo(String codigo) {
+		Aeropuerto result = null;
 		for (int i = 0; i < largo; i++) {
 			String codigoAComparar = vertices[i].getCodigo();
-			if (vertices[i].getCodigo() == codigo) {
-				return vertices[i];
+			if (codigoAComparar.equals(codigo)) {
+				result = vertices[i];
 			}
 		}
-		return null;
+		return result;
+	}
+
+	public int buscarIndiceCodigo(String codigo) {
+		int result = -1;
+		for (int i = 0; i < largo; i++) {
+			String codigoAComparar = vertices[i].getCodigo();
+			if (codigoAComparar.equals(codigo)) {
+				result = i;
+			}
+		}
+		return result;
+	}
+
+	public Conexion buscarConexion(String origen, String destino) {
+		int idxOrigen = buscarIndiceCodigo(origen);
+		int idxDestino = buscarIndiceCodigo(destino);
+		if (idxOrigen == -1 || idxDestino == -1) {
+			return null;
+		}
+		return aristas[idxOrigen][idxDestino].conexion;
+	}
+
+	public Vuelo buscarVuelo(String origen, String destino, String codigo) {
+		Conexion c = buscarConexion(origen, destino);
+		if (c == null) {
+			return null;
+		} else {
+			return c.buscarVuelo(codigo);
+		}
 	}
 
 	public void agregarArista(Aeropuerto origen,

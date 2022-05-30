@@ -80,10 +80,9 @@ public class SistemaImp implements Sistema {
 			if (codigo == null || nombre == null || codigo.isEmpty() || nombre.isEmpty()) {
 				return new Retorno(Retorno.Resultado.ERROR_2);
 			} else {
-				if (buscarAeropuerto(codigo) != null) {
+				if (grafo.buscarCodigo(codigo) != null) {
 					return new Retorno(Retorno.Resultado.ERROR_3);
 				} else {
-					var aeropuert = buscarAeropuerto(codigo);
 					grafo.agregarVertice(new Aeropuerto(nombre, codigo));
 					return new Retorno(Retorno.Resultado.OK);
 				}
@@ -93,29 +92,73 @@ public class SistemaImp implements Sistema {
 		}
 	}
 
-	private Aeropuerto buscarAeropuerto(String codigo) {
-		if (codigo == null || grafo.getLargo() == 0) {
-			return null;
-		}
-		return grafo.buscarCodigo(codigo);
-
-	}
-
 	@Override
 	public Retorno registrarConexion(String codigoAeropuertoOrigen, String codigoAeropuertoDestino, double kilometros) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		if (kilometros <= 0) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		} else if (grafo.buscarCodigo(codigoAeropuertoOrigen) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_2);
+		} else if (grafo.buscarCodigo(codigoAeropuertoDestino) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_3);
+		} else if (grafo.buscarConexion(codigoAeropuertoOrigen, codigoAeropuertoDestino) != null) {
+			return new Retorno(Retorno.Resultado.ERROR_4);
+		} else {
+			Conexion c = new Conexion(kilometros);
+			Aeropuerto origen = grafo.buscarCodigo(codigoAeropuertoOrigen);
+			Aeropuerto destino = grafo.buscarCodigo(codigoAeropuertoDestino);
+			grafo.agregarArista(origen, destino, c);
+		}
+		return new Retorno(Retorno.Resultado.OK);
 	}
 
 	@Override
 	public Retorno registrarVuelo(String codigoAeropuertoOrigen, String codigoAeropuertoDestino, String codigoDeVuelo,
 			double combustible, double minutos, double costoEnDolares) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		Conexion c = grafo.buscarConexion(codigoAeropuertoOrigen, codigoAeropuertoDestino);
+		if (combustible <= 0 || minutos <= 0 || costoEnDolares <= 0) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		} else if (codigoAeropuertoDestino == null || codigoAeropuertoDestino.isEmpty() || codigoAeropuertoOrigen == null
+				|| codigoAeropuertoOrigen.isEmpty()) {
+			return new Retorno(Retorno.Resultado.ERROR_2);
+		} else if (grafo.buscarCodigo(codigoAeropuertoOrigen) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_3);
+		} else if (grafo.buscarCodigo(codigoAeropuertoDestino) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_4);
+		} else if (c == null) {
+			return new Retorno(Retorno.Resultado.ERROR_5);
+		} else if (grafo.buscarVuelo(codigoAeropuertoOrigen, codigoAeropuertoDestino, codigoDeVuelo) != null) {
+			return new Retorno(Retorno.Resultado.ERROR_6);
+		} else {
+			Vuelo v = new Vuelo(codigoAeropuertoOrigen, codigoAeropuertoDestino, codigoDeVuelo, combustible, minutos,
+					costoEnDolares);
+			c.agregarVuelo(v);
+			return new Retorno(Retorno.Resultado.OK);
+		}
 	}
 
 	@Override
 	public Retorno actualizarVuelo(String codigoAeropuertoOrigen, String codigoAeropuertoDestino, String codigoDeVuelo,
 			double combustible, double minutos, double costoEnDolares) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		Vuelo v = grafo.buscarVuelo(codigoAeropuertoOrigen, codigoAeropuertoDestino, codigoDeVuelo);
+		if (combustible <= 0 || minutos <= 0 || costoEnDolares <= 0) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		} else if (codigoAeropuertoDestino == null || codigoAeropuertoDestino.isEmpty()
+				|| codigoAeropuertoOrigen == null || codigoAeropuertoOrigen.isEmpty()) {
+			return new Retorno(Retorno.Resultado.ERROR_2);
+		} else if (grafo.buscarCodigo(codigoAeropuertoOrigen) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_3);
+		} else if (grafo.buscarCodigo(codigoAeropuertoDestino) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_4);
+		} else if (grafo.buscarConexion(codigoAeropuertoOrigen, codigoAeropuertoDestino) == null) {
+			return new Retorno(Retorno.Resultado.ERROR_5);
+		} else if (v == null) {
+			return new Retorno(Retorno.Resultado.ERROR_6);
+		} else {
+			v.setCombustible(combustible);
+			v.setMinutos(minutos);
+			v.setCostoEnDolares(costoEnDolares);
+			return new Retorno(Retorno.Resultado.OK);
+		}
 	}
 
 	@Override
