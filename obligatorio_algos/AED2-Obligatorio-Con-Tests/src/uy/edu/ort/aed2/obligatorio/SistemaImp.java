@@ -6,6 +6,7 @@ import uy.edu.ort.aed2.obligatorio.Retorno.Resultado;
 public class SistemaImp implements Sistema {
 
 	int maxAeropuertos;
+	Grafo grafo;
 	Arbol<Pasajero> pasajeros;
 
 	@Override
@@ -14,6 +15,7 @@ public class SistemaImp implements Sistema {
 			return new Retorno(Retorno.Resultado.ERROR_1);
 		} else {
 			this.pasajeros = new Arbol<Pasajero>();
+			this.grafo = new Grafo(maxAeropuertos);
 			return new Retorno(Retorno.Resultado.OK);
 		}
 	}
@@ -40,7 +42,6 @@ public class SistemaImp implements Sistema {
 		if (!Pasajero.verificarCedula(cedula)) {
 			return new Retorno(Retorno.Resultado.ERROR_1);
 		}
-		int cedulaInt = Integer.parseInt(cedula.replaceAll("[./-]", ""));
 		int contador = 0;
 		var current = pasajeros.raiz;
 		while (current != null) {
@@ -75,7 +76,29 @@ public class SistemaImp implements Sistema {
 
 	@Override
 	public Retorno registrarAeropuerto(String codigo, String nombre) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+		try {
+			if (codigo == null || nombre == null || codigo.isEmpty() || nombre.isEmpty()) {
+				return new Retorno(Retorno.Resultado.ERROR_2);
+			} else {
+				if (buscarAeropuerto(codigo) != null) {
+					return new Retorno(Retorno.Resultado.ERROR_3);
+				} else {
+					var aeropuert = buscarAeropuerto(codigo);
+					grafo.agregarVertice(new Aeropuerto(nombre, codigo));
+					return new Retorno(Retorno.Resultado.OK);
+				}
+			}
+		} catch (FullException e) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		}
+	}
+
+	private Aeropuerto buscarAeropuerto(String codigo) {
+		if (codigo == null || grafo.getLargo() == 0) {
+			return null;
+		}
+		return grafo.buscarCodigo(codigo);
+
 	}
 
 	@Override

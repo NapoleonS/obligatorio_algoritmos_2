@@ -7,7 +7,8 @@ public class Lista<T> {
 		this.cabeza = new Nodo(cabeza);
 	}
 
-	public Lista(){}
+	public Lista() {
+	}
 
 	class Nodo {
 		T dato;
@@ -18,13 +19,44 @@ public class Lista<T> {
 		}
 	}
 
+	public void addInicio(T dato) {
+		Nodo nuevo = new Nodo(dato);
+		nuevo.next = cabeza;
+		cabeza = nuevo;
+	}
+
+	public Object removeInicio() {
+		if (cabeza == null) {
+			return null;
+		}
+		Nodo aux = cabeza;
+		cabeza = cabeza.next;
+		return aux.dato;
+	}
+
+	public Object removeFinal() {
+		if (cabeza == null) {
+			return null;
+		}
+		Nodo aux = cabeza;
+		while (aux.next.next != null) {
+			aux = aux.next;
+		}
+		aux.next = null;
+		return aux.dato;
+	}
+
+	public boolean isEmpty() {
+		return cabeza == null;
+	}
+
 	public void add(T dato) {
 		Nodo new_node = new Nodo(dato);
 		new_node.next = null;
-if(this.cabeza == null){
-	this.cabeza = new_node;
-	return;
-}
+		if (this.cabeza == null) {
+			this.cabeza = new_node;
+			return;
+		}
 
 		Nodo last = this.cabeza;
 		while (last.next != null) {
