@@ -67,7 +67,7 @@ public class Lista<T> {
 
 	}
 
-	public T search(T dato) {
+	public T search(Object dato) {
 		Nodo current = this.cabeza;
 		while (current != null) {
 			if (current.dato.equals(dato)) {
