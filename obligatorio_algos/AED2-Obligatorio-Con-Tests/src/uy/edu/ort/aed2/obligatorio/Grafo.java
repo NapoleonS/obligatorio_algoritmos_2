@@ -54,7 +54,7 @@ public class Grafo {
 
 	private int buscarIndice(Aeropuerto a) {
 		for (int i = 0; i < largo; i++) {
-			if (vertices[i].equals(a)) {
+			if (vertices[i].getCodigo().equals(a.getCodigo())) {
 				return i;
 			}
 		}
@@ -156,6 +156,32 @@ public class Grafo {
 
 		}
 
+	}
+
+	public Lista<Aeropuerto> bfsLimitado(Aeropuerto origen, int limite) {
+		Lista<Aeropuerto> result = new Lista<Aeropuerto>();
+		Lista<Integer> frontera = new Lista<Integer>();// Queue
+		int idxOrigen = buscarIndice(origen);
+		boolean[] visitados = new boolean[maxVertices];
+		frontera.add(idxOrigen);// push
+		int current = 0;
+		while (!frontera.isEmpty() && current <= limite) {
+			Integer verticeAExplorar = (Integer) frontera.removeInicio();// pop
+
+			if (!visitados[verticeAExplorar]) {
+				result.add(vertices[verticeAExplorar]);
+
+				visitados[verticeAExplorar] = true;
+				// foreach de los adyacentes !
+				for (int destino = 0; destino < maxVertices; destino++) {
+					if (aristas[verticeAExplorar][destino].existe) {
+						frontera.add(destino);
+					}
+				}
+			}
+			current++;
+		}
+		return result;
 	}
 
 	public void bfs(Aeropuerto origen, Visitor<Aeropuerto> visitador) {
