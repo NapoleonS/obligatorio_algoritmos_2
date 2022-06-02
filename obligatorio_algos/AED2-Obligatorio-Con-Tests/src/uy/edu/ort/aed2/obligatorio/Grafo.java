@@ -165,9 +165,12 @@ public class Grafo {
 		Lista<Integer> frontera = new Lista<Integer>();// Queue
 		int idxOrigen = buscarIndice(origen);
 		boolean[] visitados = new boolean[maxVertices];
-		frontera.addInicio(idxOrigen);// push
+		frontera.add(idxOrigen);// push
 		int current = 0;
 		while (!frontera.isEmpty() && current <= limite) {
+			if (frontera.cabeza.next == null) {
+				current++;
+			}
 			Integer verticeAExplorar = (Integer) frontera.removeInicio();// pop
 
 			if (!visitados[verticeAExplorar]) {
@@ -181,7 +184,6 @@ public class Grafo {
 					}
 				}
 			}
-			current++;
 		}
 		return result;
 	}
