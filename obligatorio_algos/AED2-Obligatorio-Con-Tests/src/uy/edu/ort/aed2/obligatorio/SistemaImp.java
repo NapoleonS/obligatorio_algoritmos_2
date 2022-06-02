@@ -9,6 +9,11 @@ public class SistemaImp implements Sistema {
 	int maxAeropuertos;
 	Grafo grafo;
 	Arbol<Pasajero> pasajeros;
+	Lista<Pasajero> pasajerosCatA;
+	Lista<Pasajero> pasajerosCatB;
+	Lista<Pasajero> pasajerosCatC;
+	Lista<Pasajero> pasajerosCatD;
+	Lista<Pasajero> pasajerosCatE;
 
 	@Override
 	public Retorno inicializarSistema(int maxAeropuertos) {
@@ -17,8 +22,15 @@ public class SistemaImp implements Sistema {
 		} else {
 			this.pasajeros = new Arbol<Pasajero>();
 			this.grafo = new Grafo(maxAeropuertos);
+			pasajerosCatA = new Lista<Pasajero>();
+			pasajerosCatB = new Lista<Pasajero>();
+			pasajerosCatC = new Lista<Pasajero>();
+			pasajerosCatD = new Lista<Pasajero>();
+			pasajerosCatE = new Lista<Pasajero>();
+
 			return new Retorno(Retorno.Resultado.OK);
 		}
+
 	}
 
 	@Override
@@ -32,9 +44,26 @@ public class SistemaImp implements Sistema {
 			} else if (buscarPasajero(cedula).resultado == Resultado.OK) {
 				return new Retorno(Retorno.Resultado.ERROR_3);
 			} else {
-				pasajeros.add(new Pasajero(cedula, nombre, telefono, categoria));
+				Pasajero p = new Pasajero(cedula, nombre, telefono, categoria);
+				pasajeros.add(p);
+				clasificarPasajero(p);
+
 				return new Retorno(Retorno.Resultado.OK);
 			}
+		}
+	}
+
+	public void clasificarPasajero(Pasajero p) {
+		if (p.categoria == Categoria.A) {
+			pasajerosCatA.add(p);
+		} else if (p.categoria == Categoria.B) {
+			pasajerosCatB.add(p);
+		} else if (p.categoria == Categoria.C) {
+			pasajerosCatC.add(p);
+		} else if (p.categoria == Categoria.D) {
+			pasajerosCatD.add(p);
+		} else if (p.categoria == Categoria.E) {
+			pasajerosCatE.add(p);
 		}
 	}
 
@@ -74,8 +103,20 @@ public class SistemaImp implements Sistema {
 
 	@Override
 	public Retorno listarPasajerosPorCategoría(Categoria categoria) {
-		Lista<Pasajero> pasajerosCategoria = new Lista<Pasajero>();
-		listarPasajerosPorCategoriaRecursivo(categoria, pasajeros.raiz, pasajerosCategoria);
+		Lista<Pasajero> pasajerosCategoria;
+		if (categoria == Categoria.A) {
+			pasajerosCategoria = pasajerosCatA;
+		} else if (categoria == Categoria.B) {
+			pasajerosCategoria = pasajerosCatB;
+		} else if (categoria == Categoria.C) {
+			pasajerosCategoria = pasajerosCatC;
+		} else if (categoria == Categoria.D) {
+			pasajerosCategoria = pasajerosCatD;
+		} else if (categoria == Categoria.E) {
+			pasajerosCategoria = pasajerosCatE;
+		} else {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		}
 		String result = "";
 		NodoLista current = pasajerosCategoria.cabeza;
 		while (current != null) {
@@ -89,17 +130,6 @@ public class SistemaImp implements Sistema {
 			current = current.next;
 		}
 		return new Retorno(Retorno.Resultado.OK, 0, result);
-	}
-
-	private void listarPasajerosPorCategoriaRecursivo(Categoria categoria, Nodo nodo,
-			Lista<Pasajero> pasajerosCategoria) {
-		if (nodo == null)
-			return;
-		listarPasajerosPorCategoriaRecursivo(categoria, nodo.right, pasajerosCategoria);
-		if (((Pasajero) nodo.dato).categoria == categoria) {
-			pasajerosCategoria.add((Pasajero) nodo.dato);
-		} // nodo.toString()?
-		listarPasajerosPorCategoriaRecursivo(categoria, nodo.left, pasajerosCategoria);
 	}
 
 	@Override
@@ -204,12 +234,35 @@ public class SistemaImp implements Sistema {
 
 	@Override
 	public Retorno viajeCostoMinimoKilometros(String codigoAeropuertoOrigen, String codigoAeropuertoDestino) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+
+		if (codigoAeropuertoOrigen == "" || codigoAeropuertoOrigen == null || codigoAeropuertoDestino == ""
+				|| codigoAeropuertoDestino == null) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		}
+
+		Visitor visitador = new Visitor<Integer>() {
+			@Override
+			public Integer visitar(Object a) {
+				return (int) ((Conexion) a).getKm();
+			}
+		};
+		Retorno camino = grafo.dijkstra(grafo.buscarCodigo(codigoAeropuertoOrigen),
+				grafo.buscarCodigo(codigoAeropuertoDestino), visitador);
+		return camino;
 	}
 
 	@Override
 	public Retorno viajeCostoMinimoDolares(String codigoAeropuertoOrigen, String codigoAeropuertoDestino) {
-		return new Retorno(Retorno.Resultado.NO_IMPLEMENTADA);
+
+		Visitor visitador = new Visitor<Integer>() {
+			@Override
+			public Integer visitar(Object a) {
+				return (int) ((Conexion) a).costoMinimoEnDolares();
+			}
+		};
+		Retorno camino = grafo.dijkstra(grafo.buscarCodigo(codigoAeropuertoOrigen),
+				grafo.buscarCodigo(codigoAeropuertoDestino), visitador);
+		return camino;
 	}
 
 	@Override
