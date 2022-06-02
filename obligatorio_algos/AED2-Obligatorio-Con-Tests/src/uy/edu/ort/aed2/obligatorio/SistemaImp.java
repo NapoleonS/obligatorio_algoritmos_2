@@ -227,9 +227,41 @@ public class SistemaImp implements Sistema {
 			return new Retorno(Retorno.Resultado.ERROR_2);
 		} else {
 			Lista<Aeropuerto> lista = grafo.bfsLimitado(grafo.buscarCodigo(codigoAeropuertoDeOrigen), cantidad);
-
+			lista = ordenarListaPorCodigo(lista);
 			return new Retorno(Retorno.Resultado.OK, 0, lista.toString());
 		}
+	}
+
+	private Lista<Aeropuerto> ordenarListaPorCodigo(Lista<Aeropuerto> lista) {
+		Lista<Aeropuerto> result = lista;
+		NodoLista current = result.cabeza, index = null;
+
+		Aeropuerto temp;
+
+		if (result.cabeza == null) {
+			return null;
+		} else {
+			while (current != null) {
+				// Node index will point to node next to
+				// current
+				index = current.next;
+
+				while (index != null) {
+					// If current node's data is greater
+					// than index's node data, swap the data
+					// between them
+					if (((Aeropuerto) current.dato).getCodigo().compareTo(((Aeropuerto) index.dato).getCodigo()) > 0) {
+						temp = (Aeropuerto) current.dato;
+						current.dato = index.dato;
+						index.dato = temp;
+					}
+
+					index = index.next;
+				}
+				current = current.next;
+			}
+		}
+		return result;
 	}
 
 	@Override

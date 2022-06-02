@@ -41,24 +41,40 @@ public class Arbol<T> {
 
 	public String listarOrdenado() {
 		if (this.raiz == null) {
+			pasajerosAscendente = "";
 			return "";
 		}
 		pasajerosAscendente = "";
 		listarOrdenado(raiz);
-		return pasajerosAscendente;
+		StringBuffer sb = new StringBuffer(pasajerosAscendente);
+		sb.deleteCharAt(pasajerosAscendente.length() - 1);
+		return sb.toString();
 	}
 
 	private void listarOrdenado(Nodo nodo) {
-		if (nodo == null)
-			return;
+		if (nodo == null) {
+			if (this.pasajerosAscendente == null) {
+				this.pasajerosAscendente = "";
+				return;
+			} else {
+				return;
+			}
+		}
 		listarOrdenado(nodo.left);
-		this.pasajerosAscendente += nodo.dato.toString() + "|"; // duda: habra que hacerlo en sistemaImp con retorno string?
+		this.pasajerosAscendente += ((Pasajero) nodo.dato).toString() + "|";
 		listarOrdenado(nodo.right);
 	}
 
 	public String listarDescendente() {
+		if (this.raiz == null) {
+			pasajerosDescendente = "";
+			return "";
+		}
+		pasajerosDescendente = "";
 		listarDescendente(raiz);
-		return pasajerosDescendente;
+		StringBuffer sb = new StringBuffer(pasajerosDescendente);
+		sb.deleteCharAt(pasajerosDescendente.length() - 1);
+		return sb.toString();
 	}
 
 	private void listarDescendente(Nodo nodo) {

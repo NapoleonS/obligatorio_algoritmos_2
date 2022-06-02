@@ -97,7 +97,11 @@ public class Lista<T> {
 		StringBuilder sb = new StringBuilder();
 		NodoLista current = this.cabeza;
 		while (current != null) {
-			sb.append(current.dato.toString());
+			if (current.next == null) {
+				sb.append(current.dato.toString());
+			} else {
+				sb.append(current.dato.toString() + "|");
+			}
 			current = current.next;
 		}
 		return sb.toString();
