@@ -1,5 +1,7 @@
 package uy.edu.ort.aed2.obligatorio;
 
+import uy.edu.ort.aed2.obligatorio.Lista.NodoLista;
+
 public class Grafo {
 
 	private class Arista {
@@ -163,7 +165,7 @@ public class Grafo {
 		Lista<Integer> frontera = new Lista<Integer>();// Queue
 		int idxOrigen = buscarIndice(origen);
 		boolean[] visitados = new boolean[maxVertices];
-		frontera.add(idxOrigen);// push
+		frontera.addInicio(idxOrigen);// push
 		int current = 0;
 		while (!frontera.isEmpty() && current <= limite) {
 			Integer verticeAExplorar = (Integer) frontera.removeInicio();// pop
@@ -208,11 +210,116 @@ public class Grafo {
 
 	}
 
+	private boolean estaTodoVisitado(boolean[] a) {
+		for (int i = 0; i < largo; i++) {
+			if (!a[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	private boolean existe(int idxOrigen, int idxDestino) {
 		return aristas[idxOrigen][idxDestino].existe;
 	}
 
-	public void dijkstra(Aeropuerto e, Aeropuerto d, Visitor<Aeropuerto> visitor) {
+	public Retorno dijkstra(Aeropuerto o, Aeropuerto d, Visitor<Object> visitor) {
+		if (o == null || d == null) {
+			return new Retorno(Retorno.Resultado.ERROR_1);
+		}
+		int idxOrigen = buscarIndice(o);
+		int idxDestino = buscarIndice(d);
+		int[] padres = new int[maxVertices];
+		int[] distancias = new int[maxVertices];
+		boolean[] visitados = new boolean[maxVertices];
+		for (int i = 0; i < maxVertices; i++) {
+			padres[i] = -1;
+			distancias[i] = Integer.MAX_VALUE;
+		}
+		padres[idxOrigen] = idxOrigen;
+		distancias[idxOrigen] = 0;
+		while (!estaTodoVisitado(visitados)) {
+			int vActual = obtenerMenor(visitados, distancias);
+			for (int idxAdy = 0; idxAdy < maxVertices; idxAdy++) {
+				if (aristas[vActual][idxAdy].existe) {
+					int distancia = (int) visitor.visitar(aristas[vActual][idxAdy].conexion) + distancias[vActual];
+					if (distancia < distancias[idxAdy]) {
+						distancias[idxAdy] = distancia;
+						padres[idxAdy] = vActual;
+					}
+				}
+			}
+			visitados[vActual] = true;
+		}
+		Lista<Aeropuerto> camino = reconstruirCamino(padres, idxOrigen, idxDestino);
+		int ponderacion = reconstruirCaminoPonderado(camino, visitor);
+		if (ponderacion == -1) {
+			return new Retorno(Retorno.Resultado.ERROR_2);
+		} else {
+			return new Retorno(Retorno.Resultado.OK, ponderacion, armarStringCamino(camino));
+		}
+	}
 
+	private String armarStringCamino(Lista<Aeropuerto> camino) {
+		String resultado = "";
+		NodoLista actual = camino.cabeza;
+		while (actual != null) {
+			if (actual.next == null) {
+				resultado += ((Aeropuerto) actual.dato).getCodigo() + ";" + ((Aeropuerto) actual.dato).getNombre();
+			} else {
+				resultado += ((Aeropuerto) actual.dato).getCodigo() + ";" + ((Aeropuerto) actual.dato).getNombre()
+						+ "|";
+			}
+			actual = actual.next;
+		}
+		return resultado;
+	}
+
+	private int reconstruirCaminoPonderado(Lista<Aeropuerto> camino, Visitor visitor) {
+
+		if (camino == null || camino.cabeza == null) {
+			return -1;
+		}
+		int result = 0;
+		NodoLista current = camino.cabeza;
+		while (current != null) {
+			if (current.next != null) {
+				int ponderacion = (int) visitor
+						.visitar(aristas[buscarIndice((Aeropuerto) current.dato)][buscarIndice(
+								(Aeropuerto) current.next.dato)].conexion);
+				if (ponderacion == -1) {
+					return -1;
+				}
+				result += ponderacion;
+			}
+			current = current.next;
+		}
+		return result;
+	}
+
+	private Lista<Aeropuerto> reconstruirCamino(int[] padres, int idxOrigen, int idxDestino) {
+		Lista<Aeropuerto> camino = new Lista<Aeropuerto>();
+		if (padres[idxDestino] == -1) {
+			return null;
+		}
+		int idxActual = idxDestino;
+		while (idxActual != idxOrigen) {
+			camino.addInicio(vertices[idxActual]);
+			idxActual = padres[idxActual];
+		}
+		camino.addInicio(vertices[idxOrigen]);
+		return camino;
+	}
+
+	private int obtenerMenor(boolean[] visitados, int[] distancias) {
+		int minimo = Integer.MAX_VALUE;
+		int idxMinimo = -1;
+		for (int i = 0; i < largo; i++) {
+			if (distancias[i] <= minimo && !visitados[i]) {
+				minimo = distancias[i];
+				idxMinimo = i;
+			}
+		}
+		return idxMinimo;
 	}
 }

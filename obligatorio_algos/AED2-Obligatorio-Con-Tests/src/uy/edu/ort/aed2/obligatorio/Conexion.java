@@ -1,9 +1,10 @@
 package uy.edu.ort.aed2.obligatorio;
 
+import uy.edu.ort.aed2.obligatorio.Lista.NodoLista;
+
 public class Conexion {
 	private double km;
 	private boolean habilitada;
-
 	private Lista<Vuelo> vuelos;
 
 	public Conexion(double km, boolean habilitada) {
@@ -18,6 +19,21 @@ public class Conexion {
 
 	public double getKm() {
 		return km;
+	}
+
+	public double costoMinimoEnDolares() {
+		if (vuelos.cabeza == null) {
+			return -1;
+		}
+		double costoMinimo = ((Vuelo) vuelos.cabeza.dato).getCostoEnDolares();
+		NodoLista current = vuelos.cabeza;
+		while (current != null) {
+			if (((Vuelo) current.dato).getCostoEnDolares() < costoMinimo) {
+				costoMinimo = ((Vuelo) current.dato).getCostoEnDolares();
+			}
+			current = current.next;
+		}
+		return costoMinimo;
 	}
 
 	public boolean habilitada() {
